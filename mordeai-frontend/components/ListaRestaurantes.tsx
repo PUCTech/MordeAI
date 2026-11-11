@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Restaurante } from "@/types/restaurante";
 import RestauranteCard from "@/components/RestauranteCard";
 
@@ -11,6 +11,22 @@ export default function ListaRestaurantes({
 }) {
   const [filtro, setFiltro] = useState("Todas");
   const [favoritos, setFavoritos] = useState<number[]>([]);
+
+  const [carregou, setCarregou] = useState(false);
+
+useEffect(() => {
+  const salvo = localStorage.getItem("favoritos");
+  if (salvo) {
+    setFavoritos(JSON.parse(salvo));
+  }
+  setCarregou(true);
+}, []);
+
+useEffect(() => {
+  if (carregou) {
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+  }
+}, [favoritos, carregou]);
 
   function alternarFavorito(id: number) {
     setFavoritos((atual) =>
