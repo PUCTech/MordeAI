@@ -1,16 +1,43 @@
 import { Restaurante } from "@/types/restaurante";
 
-export default function RestauranteCard({ restaurante }: { restaurante: Restaurante }) {
-  const cheias = Math.round(restaurante.nota);
+type Props = {
+  restaurante: Restaurante;
+  favorito: boolean;
+  onFavoritar: () => void;
+};
+
+export default function RestauranteCard({ restaurante, favorito, onFavoritar }: Props) {
+  const { nota } = restaurante;
+  const cheias = nota ? Math.round(nota) : 0;
   const estrelas = "★".repeat(cheias) + "☆".repeat(5 - cheias);
 
   return (
     <div className="rounded-xl border border-gray-300 p-4 shadow-sm">
-      <h2 className="text-lg font-semibold">{restaurante.nome}</h2>
-      <p className="text-sm text-gray-500">{restaurante.culinaria}</p>
-      <p className="mt-2 text-yellow-500">
-        {estrelas} <span className="text-gray-500">{restaurante.nota.toFixed(1)}</span>
-      </p>
+      <div className="flex items-start justify-between">
+        <h2 className="text-lg font-semibold">{restaurante.nome}</h2>
+        <button
+          onClick={onFavoritar}
+          aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+          className="text-xl"
+        >
+          {favorito ? "❤️" : "🤍"}
+        </button>
+      </div>
+
+      <div className="mt-1 flex flex-wrap gap-1">
+        {restaurante.tags.map((tag) => (
+          <span key={tag} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {nota !== undefined && (
+        <p className="mt-2 text-yellow-500">
+          {estrelas} <span className="text-gray-500">{nota.toFixed(1)}</span>
+        </p>
+      )}
+
       <p className="mt-1 text-sm text-gray-500">{restaurante.endereco}</p>
     </div>
   );

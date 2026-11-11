@@ -2,7 +2,7 @@
 export type Restaurante = {
     id: number;
     nome: string;
-    culinaria: string;
-    nota: number;
     endereco: string;
+    tags: string[]; //culinaria
+    nota?: number; //pergunta pq na api nao tem isso ainda, deixei como apcional para a tela nao quebrar.
 };
