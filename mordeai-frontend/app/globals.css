@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eeede5;
+  --foreground: #140f0d;
+  color-scheme: light;
+}
+
+/* Cores do protótipo, com nome. Viram classes: bg-fundo, text-vermelho, etc. */
+@theme {
+  --color-fundo: #eeede5;
+  --color-cartao: #eee2c8;
+  --color-borda: #b5bc8a;
+  --color-vermelho: #b80c09;
+  --color-marrom: #7a3f2e;
+  --color-tinta: #140f0d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-titulo: var(--font-manrope);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Títulos usam a fonte de título */
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+  }
 }
