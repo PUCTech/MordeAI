@@ -1,5 +1,7 @@
 import ListaRestaurantes from "@/components/ListaRestaurantes";
 import { listarRestaurantes } from "@/services/restaurantes";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function RestaurantesPage() {
   const restaurantes = await listarRestaurantes();
@@ -9,9 +11,16 @@ export default async function RestaurantesPage() {
       {/* Barra de cima */}
       <header className="border-b border-borda">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <span className="font-serif text-3xl text-tinta">
-            Morde<span className="italic text-vermelho">AI</span>
-          </span>
+          <Link href="/" aria-label="MordeAI, página inicial">
+            <Image
+              src="/logo.png"
+              alt="MordeAI"
+              width={188}
+              height={55}
+              priority
+              className="h-12 w-auto"
+            />
+          </Link>
         </div>
       </header>
 
