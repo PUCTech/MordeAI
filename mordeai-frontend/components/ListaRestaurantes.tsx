@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Restaurante } from "@/types/restaurante";
 import RestauranteCard from "@/components/RestauranteCard";
+import RestauranteModal from "@/components/RestauranteModal";
 
 export default function ListaRestaurantes({
   restaurantes,
@@ -11,28 +12,29 @@ export default function ListaRestaurantes({
 }) {
   const [filtro, setFiltro] = useState("Todas");
   const [favoritos, setFavoritos] = useState<number[]>([]);
+  const [selecionado, setSelecionado] = useState<Restaurante | null>(null); 
 
   const [carregou, setCarregou] = useState(false);
 
-useEffect(() => {
-  const salvo = localStorage.getItem("favoritos");
-  if (salvo) {
-    setFavoritos(JSON.parse(salvo));
-  }
-  setCarregou(true);
-}, []);
+  useEffect(() => {
+    const salvo = localStorage.getItem("favoritos");
+    if (salvo) {
+      setFavoritos(JSON.parse(salvo));
+    }
+    setCarregou(true);
+  }, []);
 
-useEffect(() => {
-  if (carregou) {
-    localStorage.setItem("favoritos", JSON.stringify(favoritos));
-  }
-}, [favoritos, carregou]);
+  useEffect(() => {
+    if (carregou) {
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+    }
+  }, [favoritos, carregou]);
 
   function alternarFavorito(id: number) {
     setFavoritos((atual) =>
       atual.includes(id) ? atual.filter((x) => x !== id) : [...atual, id]
-  );
-}
+    );
+  }
 
   const tags = ["Todas", ...new Set(restaurantes.flatMap((r) => r.tags))];
 
@@ -66,9 +68,19 @@ useEffect(() => {
             restaurante={r}
             favorito={favoritos.includes(r.id)}
             onFavoritar={() => alternarFavorito(r.id)}
+            onAbrir={() => setSelecionado(r)} 
           />
         ))}
       </div>
+
+    
+      {selecionado && (
+        <RestauranteModal
+          restaurante={selecionado}
+          favorito={favoritos.includes(selecionado.id)}
+          onFechar={() => setSelecionado(null)}
+        />
+      )}
     </>
   );
 }

@@ -4,19 +4,26 @@ type Props = {
   restaurante: Restaurante;
   favorito: boolean;
   onFavoritar: () => void;
+  onAbrir: () => void; 
 };
 
-export default function RestauranteCard({ restaurante, favorito, onFavoritar }: Props) {
+export default function RestauranteCard({ restaurante, favorito, onFavoritar, onAbrir }: Props) {
   const { nota } = restaurante;
   const cheias = nota ? Math.round(nota) : 0;
   const estrelas = "★".repeat(cheias) + "☆".repeat(5 - cheias);
 
   return (
-    <div className="rounded-xl border border-gray-300 p-4 shadow-sm">
+    <div
+      onClick={onAbrir} //clicar no card abre o modal
+      className="cursor-pointer rounded-xl border border-gray-300 p-4 shadow-sm" //cursor-pointer
+    >
       <div className="flex items-start justify-between">
         <h2 className="text-lg font-semibold">{restaurante.nome}</h2>
         <button
-          onClick={onFavoritar}
+          onClick={(e) => {
+            e.stopPropagation(); //impede o clique de "subir" para o card
+            onFavoritar();
+          }}
           aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
           className="text-xl"
         >
