@@ -7,5 +7,5 @@ export type Restaurante = {
     nota?: number; //pergunta pq na api nao tem isso ainda, deixei como apcional para a tela nao quebrar.
     data?: string;
     preco?: number;
-    comentario: string;
+    comentario?: string;
 };

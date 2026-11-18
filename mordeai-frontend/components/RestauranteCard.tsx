@@ -1,53 +1,60 @@
 import { Restaurante } from "@/types/restaurante";
+import { formatarDataCurta, formatarMoeda } from "@/utils/formatar";
 
 type Props = {
   restaurante: Restaurante;
   favorito: boolean;
   onFavoritar: () => void;
-  onAbrir: () => void; 
+  onAbrir: () => void;
 };
 
 export default function RestauranteCard({ restaurante, favorito, onFavoritar, onAbrir }: Props) {
-  const { nota } = restaurante;
-  const cheias = nota ? Math.round(nota) : 0;
-  const estrelas = "★".repeat(cheias) + "☆".repeat(5 - cheias);
-
   return (
     <div
-      onClick={onAbrir} //clicar no card abre o modal
-      className="cursor-pointer rounded-xl border border-gray-300 p-4 shadow-sm" //cursor-pointer
+      onClick={onAbrir}
+      className="cursor-pointer rounded-3xl border border-[#B5BC8A] bg-[#EEE2C8] p-6 text-neutral-900 transition hover:shadow-md"
     >
-      <div className="flex items-start justify-between">
-        <h2 className="text-lg font-semibold">{restaurante.nome}</h2>
+      {/* PARTE DE CIMA */}
+      <div className="flex items-start gap-4">
+        {/* Quadradinho com a inicial */}
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#B80C09] text-xl font-bold text-white">
+          {restaurante.nome[0]}
+        </div>
+
+        {/* Culinária, nome e endereço */}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#B80C09]">
+            {restaurante.tags[0]}
+          </p>
+          <h2 className="truncate text-xl font-bold">{restaurante.nome}</h2>
+          <p className="truncate text-sm text-neutral-700">{restaurante.endereco}</p>
+        </div>
+
+        {/* Coração */}
         <button
           onClick={(e) => {
-            e.stopPropagation(); //impede o clique de "subir" para o card
+            e.stopPropagation();
             onFavoritar();
           }}
           aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-          className="text-xl"
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-lg text-[#B80C09] ${
+            favorito ? "border-[#B80C09]" : "border-[#B5BC8A]"
+          }`}
         >
-          {favorito ? "❤️" : "🤍"}
+          {favorito ? "♥" : "♡"}
         </button>
       </div>
 
-      <div className="mt-1 flex flex-wrap gap-1">
-        {restaurante.tags.map((tag) => (
-          <span key={tag} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-            {tag}
-          </span>
-        ))}
+      <hr className="my-4 border-[#B5BC8A]" />
+
+      {/* RODAPÉ */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-bold">
+          <span className="text-[#B80C09]">★</span> {restaurante.nota?.toFixed(1) ?? "—"}
+        </span>
+        <span>{formatarDataCurta(restaurante.data)}</span>
+        <span className="font-bold">{formatarMoeda(restaurante.preco)}</span>
       </div>
-
-      {nota !== undefined && (
-        <p className="mt-2 text-yellow-500">
-          {estrelas} <span className="text-gray-500">{nota.toFixed(1)}</span>
-        </p>
-      )}
-
-      <p className="mt-1 text-sm text-gray-500">{restaurante.endereco}</p>
     </div>
   );
 }
-
-//Um componente é um pedaço de tela reutilizável. Esse recebe um restaurante e desenha o cartão dele. As classes como rounded-xl e p-4 são do Tailwind: borda arredondada e espaçamento interno.

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { Restaurante } from "@/types/restaurante"; // ajuste o caminho
+import { Restaurante } from "@/types/restaurante";
+import { formatarMoeda } from "@/utils/formatar";
 
 type Props = {
   restaurante: Restaurante;
@@ -31,11 +32,6 @@ export default function RestauranteModal({ restaurante, favorito, onFechar }: Pr
       })
     : "—";
 
-  const valorFormatado =
-    restaurante.preco !== undefined
-      ? restaurante.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-      : "—";
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -49,8 +45,8 @@ export default function RestauranteModal({ restaurante, favorito, onFechar }: Pr
         onClick={(e) => e.stopPropagation()} // clicar dentro NÃO fecha
       >
         {/* Cabeçalho marrom */}
-        <div className="relative flex items-center gap-4 bg-[#7A3F2E] p-8">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#B80C09] text-2xl font-bold text-white">
+        <div className="relative flex items-center gap-4 bg-[#7A3F2E] p-8 pr-20">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#B80C09] text-2xl font-bold text-white">
             {restaurante.nome[0]}
           </div>
           <div>
@@ -78,7 +74,7 @@ export default function RestauranteModal({ restaurante, favorito, onFechar }: Pr
               <span className="text-sm text-neutral-500"> / 5</span>
             </Caixa>
             <Caixa titulo="Valor gasto">
-              <span className="text-xl font-bold">{valorFormatado}</span>
+              <span className="text-xl font-bold">{formatarMoeda(restaurante.preco)}</span>
             </Caixa>
             <Caixa titulo="Favorito">
               <span className="font-semibold">
@@ -90,7 +86,7 @@ export default function RestauranteModal({ restaurante, favorito, onFechar }: Pr
 
           <hr className="border-[#B5BC8A]" />
 
-          {/* Data */}
+          {/* Endereço e data */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Campo titulo="Endereço" valor={restaurante.endereco} />
             <Campo titulo="Data da visita" valor={dataFormatada} />
@@ -104,7 +100,7 @@ export default function RestauranteModal({ restaurante, favorito, onFechar }: Pr
               Comentário da experiência
             </p>
             <div className="rounded-2xl border border-[#B5BC8A] bg-[#EEE2C8] p-4">
-              {restaurante.comentario ?? "Sem comentário."}
+              {restaurante.comentario || "Sem comentário."}
             </div>
           </div>
 
@@ -133,7 +129,7 @@ function Campo({ titulo, valor }: { titulo: string; valor: string }) {
   return (
     <div>
       <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#B80C09]">{titulo}</p>
-      <p className="text-xl font-bold">{valor}</p>
+      <p className="text-lg font-bold">{valor}</p>
     </div>
   );
 }
