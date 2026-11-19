@@ -43,10 +43,14 @@ export default function Cabecalho({ modo, ativo }: Props) {
               </Link>
               <Link
                 href="/chat"
-                className="rounded-full bg-vermelho px-5 py-3 font-bold text-white"
-              >
+                aria-current={ativo === "chat" ? "page" : undefined}
+                className={`rounded-full px-5 py-3 font-bold text-white ${
+                    ativo === "chat" ? "bg-tinta" : "bg-vermelho"
+                }`}
+            >
                 ✦ Falar com a IA
-              </Link>
+            </Link>
+            
             </nav>
 
             {/* Direita: Sair (por enquanto só volta para a landing; com login, encerra a sessão) */}
