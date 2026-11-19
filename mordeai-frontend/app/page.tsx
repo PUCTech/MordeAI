@@ -1,11 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
+import Cabecalho from "@/components/Cabecalho";
 
 // Exemplos fixos só para ilustrar o celular do topo (não vêm da API)
 const exemplos = [
-  { inicial: "N", nome: "Nonna Rosa", prato: "Cacio e pepe", nota: "4.9" },
-  { inicial: "K", nome: "Koya 88", prato: "Lámen shoyu", nota: "4.7" },
-  { inicial: "A", nome: "A Casa do Porco", prato: "Menu degustação", nota: "4.8" },
+  { inicial: "T", nome: "Tuju", prato: "Cordeiro", nota: "4.9" },
+  { inicial: "M", nome: "Marius Degustare", prato: "Salmão Defumado", nota: "4.7" },
+  { inicial: "M", nome: "Mocotó", prato: "Baião-de-dois", nota: "4.8" },
 ];
 
 const passos = [
@@ -30,34 +30,7 @@ export default function LandingPage() {
   return (
     <main className="overflow-x-clip">
       {/* BARRA DE CIMA */}
-      <header>
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-          <Link href="/" aria-label="MordeAI, página inicial">
-            <Image
-              src="/logo.png"
-              alt="MordeAI"
-              width={188}
-              height={55}
-              priority
-              className="h-12 w-auto"
-            />
-          </Link>
-
-          <nav className="hidden sm:block">
-            <a href="#como-funciona" className="font-semibold hover:text-vermelho">
-              Como funciona
-            </a>
-          </nav>
-
-          {/* CORRIGIDO: vai para o login */}
-          <Link
-            href="/entrar"
-            className="rounded-full bg-tinta px-6 py-3 font-bold text-white"
-          >
-            Entrar
-          </Link>
-        </div>
-      </header>
+      <Cabecalho modo="visitante" />
 
       {/* TOPO (HERO) */}
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 lg:grid-cols-2 lg:py-20">
@@ -78,7 +51,6 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            {/* vai para criar conta */}
             <Link
               href="/cadastro"
               className="rounded-full bg-vermelho px-7 py-4 font-bold text-white"
@@ -172,7 +144,6 @@ export default function LandingPage() {
             Crie seu perfil e transforme cada refeição em uma memória que ajuda a
             escolher a próxima.
           </p>
-          {/* vai para criar conta */}
           <Link
             href="/cadastro"
             className="mt-8 inline-block rounded-full bg-cartao px-7 py-4 font-bold text-tinta"
