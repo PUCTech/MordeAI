@@ -37,6 +37,7 @@ export default function ListaRestaurantes({
   const [meus, setMeus] = useState<Restaurante[]>([]); // cadastrados pela pessoa
   const [selecionado, setSelecionado] = useState<Restaurante | null>(null);
   const [cadastrando, setCadastrando] = useState(false);
+  const [editando, setEditando] = useState<Restaurante | null>(null);
   const [carregou, setCarregou] = useState(false);
 
   useEffect(() => {
@@ -67,6 +68,22 @@ export default function ListaRestaurantes({
   function adicionar(dados: Omit<Restaurante, "id">) {
     setMeus((atual) => [{ ...dados, id: Date.now() }, ...atual]);
     setCadastrando(false);
+  }
+
+  // TODO: quando o backend existir, trocar por um PUT na API
+  function editar(dados: Omit<Restaurante, "id">) {
+    if (!editando) return;
+    const atualizado: Restaurante = { ...dados, id: editando.id };
+    setMeus((atual) => atual.map((r) => (r.id === atualizado.id ? atualizado : r)));
+    setEditando(null);
+    setSelecionado(atualizado); // volta para os detalhes, já atualizados
+  }
+
+  // TODO: quando o backend existir, trocar por um DELETE na API
+  function excluir(id: number) {
+    setMeus((atual) => atual.filter((r) => r.id !== id));
+    setFavoritos((atual) => atual.filter((x) => x !== id));
+    setSelecionado(null);
   }
 
   // os cadastrados ficam primeiro, depois os que vieram da API/mock
@@ -100,28 +117,32 @@ export default function ListaRestaurantes({
   return (
     <>
       {/* Título + botão de adicionar */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-vermelho">
             Seu mapa de sabores
           </p>
-          <h1 className="mt-2 text-5xl font-extrabold tracking-tight">
+          <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
             Meus restaurantes.
           </h1>
-          <p className="mt-2 text-lg text-neutral-700">
+          <p className="mt-2 hidden text-lg text-neutral-700 sm:block">
             Cada mesa conta uma história. Guarde a próxima.
           </p>
         </div>
+
+        {/* Celular: botão redondo flutuante com "+". Computador: botão com texto */}
         <button
           onClick={() => setCadastrando(true)}
-          className="w-fit rounded-full bg-vermelho px-6 py-4 font-bold text-white"
+          aria-label="Adicionar restaurante"
+          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-vermelho text-3xl font-bold leading-none text-white shadow-lg sm:static sm:h-auto sm:w-auto sm:px-6 sm:py-4 sm:text-base sm:shadow-none"
         >
-          + Adicionar restaurante
+          <span aria-hidden="true">+</span>
+          <span className="hidden sm:ml-2 sm:inline">Adicionar restaurante</span>
         </button>
       </div>
 
       {/* Cards de resumo */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:mb-8 sm:grid-cols-3 sm:gap-4">
         <Resumo
           titulo="Experiências"
           valor={String(todos.length)}
@@ -137,12 +158,13 @@ export default function ListaRestaurantes({
           titulo="Investimento feliz"
           valor={formatarMoeda(investimento)}
           legenda={`${qtdFavoritos} ${qtdFavoritos === 1 ? "favorito" : "favoritos"}`}
+          className="col-span-2 sm:col-span-1"
         />
       </div>
 
       {/* Barra de filtros */}
-      <div className="mb-6 flex flex-col gap-3 border-b border-borda pb-6 sm:flex-row">
-        <div className="relative flex-1">
+      <div className="mb-6 flex flex-wrap gap-3 border-b border-borda pb-6 sm:flex-nowrap">
+        <div className="relative w-full sm:w-auto sm:flex-1">
           <svg
             className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600"
             viewBox="0 0 24 24"
@@ -167,7 +189,7 @@ export default function ListaRestaurantes({
         <select
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          className="rounded-full border border-borda bg-cartao px-4 py-3 font-semibold text-neutral-900 outline-none focus:border-vermelho"
+          className="min-w-0 flex-1 rounded-full border border-borda bg-cartao px-4 py-3 font-semibold text-neutral-900 outline-none focus:border-vermelho sm:flex-none"
         >
           {tags.map((t) => (
             <option key={t} value={t}>
@@ -179,7 +201,7 @@ export default function ListaRestaurantes({
         <button
           onClick={() => setSoFavoritos(!soFavoritos)}
           aria-pressed={soFavoritos}
-          className={`rounded-full border px-5 py-3 font-semibold ${
+          className={`flex-1 rounded-full border px-5 py-3 font-semibold sm:flex-none ${
             soFavoritos
               ? "border-vermelho bg-vermelho text-white"
               : "border-borda bg-cartao text-neutral-900"
@@ -195,7 +217,7 @@ export default function ListaRestaurantes({
           Nenhum restaurante encontrado.
         </p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
           {visiveis.map((r) => (
             <RestauranteCard
               key={r.id}
@@ -208,19 +230,31 @@ export default function ListaRestaurantes({
         </div>
       )}
 
+      {/* Detalhes */}
       {selecionado && (
         <RestauranteModal
           restaurante={selecionado}
           favorito={favoritos.includes(selecionado.id)}
+          podeEditar={meus.some((r) => r.id === selecionado.id)}
+          onEditar={() => {
+            setEditando(selecionado);
+            setSelecionado(null);
+          }}
+          onExcluir={() => excluir(selecionado.id)}
           onFechar={() => setSelecionado(null)}
         />
       )}
 
-      {cadastrando && (
+      {/* Formulário (novo ou edição) */}
+      {(cadastrando || editando) && (
         <RestauranteFormModal
           culinarias={tags.filter((t) => t !== "Todas")}
-          onSalvar={adicionar}
-          onFechar={() => setCadastrando(false)}
+          inicial={editando ?? undefined}
+          onSalvar={editando ? editar : adicionar}
+          onFechar={() => {
+            setCadastrando(false);
+            setEditando(null);
+          }}
         />
       )}
     </>
@@ -232,23 +266,25 @@ function Resumo({
   valor,
   legenda,
   destaque = false,
+  className = "",
 }: {
   titulo: string;
   valor: string;
   legenda: string;
   destaque?: boolean;
+  className?: string;
 }) {
   return (
     <div
-      className={`rounded-3xl border p-6 ${
+      className={`rounded-3xl border p-4 sm:p-6 ${
         destaque
           ? "border-marrom bg-marrom text-cartao"
           : "border-borda bg-cartao text-tinta"
-      }`}
+      } ${className}`}
     >
       <p className="text-xs font-bold uppercase tracking-widest opacity-70">{titulo}</p>
-      <p className="mt-6 text-4xl font-extrabold">{valor}</p>
-      <p className="mt-1 text-sm opacity-70">{legenda}</p>
+      <p className="mt-3 text-3xl font-extrabold sm:mt-6 sm:text-4xl">{valor}</p>
+      <p className="mt-1 text-xs opacity-70 sm:text-sm">{legenda}</p>
     </div>
   );
 }

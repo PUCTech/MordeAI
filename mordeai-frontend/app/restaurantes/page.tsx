@@ -9,7 +9,7 @@ export default async function RestaurantesPage() {
     <>
       <Cabecalho modo="usuario" ativo="perfil" />
 
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 sm:py-10">
         <ListaRestaurantes restaurantes={restaurantes} />
       </main>
     </>

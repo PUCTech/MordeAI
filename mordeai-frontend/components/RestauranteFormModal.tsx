@@ -7,6 +7,7 @@ type NovoRestaurante = Omit<Restaurante, "id">;
 
 type Props = {
   culinarias: string[]; // sugestões para o campo de culinária
+  inicial?: Restaurante; // se vier, o formulário está EDITANDO esse restaurante
   onSalvar: (dados: NovoRestaurante) => void;
   onFechar: () => void;
 };
@@ -22,14 +23,23 @@ function hoje() {
   return `${d.getFullYear()}-${mes}-${dia}`;
 }
 
-export default function RestauranteFormModal({ culinarias, onSalvar, onFechar }: Props) {
-  const [nome, setNome] = useState("");
-  const [culinaria, setCulinaria] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [nota, setNota] = useState<number | undefined>(undefined);
-  const [data, setData] = useState(hoje());
-  const [preco, setPreco] = useState("");
-  const [comentario, setComentario] = useState("");
+export default function RestauranteFormModal({
+  culinarias,
+  inicial,
+  onSalvar,
+  onFechar,
+}: Props) {
+  const editando = inicial !== undefined;
+
+  const [nome, setNome] = useState(inicial?.nome ?? "");
+  const [culinaria, setCulinaria] = useState(inicial?.tags[0] ?? "");
+  const [endereco, setEndereco] = useState(inicial?.endereco ?? "");
+  const [nota, setNota] = useState<number | undefined>(inicial?.nota);
+  const [data, setData] = useState(editando ? (inicial.data ?? "") : hoje());
+  const [preco, setPreco] = useState(
+    inicial?.preco !== undefined ? String(inicial.preco) : ""
+  );
+  const [comentario, setComentario] = useState(inicial?.comentario ?? "");
   const [erro, setErro] = useState("");
 
   // fecha com Esc e trava o scroll do fundo
@@ -83,26 +93,28 @@ export default function RestauranteFormModal({ culinarias, onSalvar, onFechar }:
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Adicionar restaurante"
+        aria-label={editando ? "Editar restaurante" : "Adicionar restaurante"}
         className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-fundo text-neutral-900"
       >
         {/* Cabeçalho */}
-        <div className="relative bg-marrom p-8 pr-20">
+        <div className="relative bg-marrom p-5 pr-16 sm:p-8 sm:pr-20">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#E6D5BE]">
-            Nova experiência
+            {editando ? "Editar experiência" : "Nova experiência"}
           </p>
-          <h2 className="text-3xl font-bold text-cartao">Adicionar restaurante</h2>
+          <h2 className="text-2xl font-bold text-cartao sm:text-3xl">
+            {editando ? "Editar restaurante" : "Adicionar restaurante"}
+          </h2>
           <button
             type="button"
             onClick={onFechar}
             aria-label="Fechar"
-            className="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white sm:right-6 sm:top-6"
           >
             ✕
           </button>
         </div>
 
-        <form onSubmit={enviar} noValidate className="space-y-5 p-8">
+        <form onSubmit={enviar} noValidate className="space-y-5 p-5 sm:p-8">
           <Bloco titulo="Nome do restaurante" htmlFor="nome">
             <input
               id="nome"
@@ -212,7 +224,7 @@ export default function RestauranteFormModal({ culinarias, onSalvar, onFechar }:
               type="submit"
               className="rounded-full bg-vermelho px-6 py-3 font-bold text-white"
             >
-              Salvar restaurante
+              {editando ? "Salvar alterações" : "Salvar restaurante"}
             </button>
             <button
               type="button"
